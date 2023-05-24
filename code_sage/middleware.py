@@ -7,16 +7,16 @@ logger = logging.getLogger(__name__)
 
 OPEN_AI_API_KEY = get_setting(name="OPEN_AI_API_KEY")
 CODE_SAGE_ENABLED = get_setting(name="OPEN_AI_API_KEY") or False
-RESPONSE_WORD_LIMIT = get_setting(name="RESPONSE_WORD_LIMIT") or 120
+CODE_SAGE_SUGGESTION_WORD_LIMIT = get_setting(name="CODE_SAGE_SUGGESTION_WORD_LIMIT") or 120
 
 
 if OPEN_AI_API_KEY:
     openai.api_key = OPEN_AI_API_KEY
 else:
-    logger.error(
-        "CHAT_GPT_API_KEY has not been set in django settings or as an environment variable"
+    logger.warning(
+        "OPEN_AI_API_KEY has not been set in django settings or as an environment variable. code_sage requires this in"
+        " order to provide suggestions to resolve unhandled errors."
     )
-
 
 # Questions sent to OpenAI and the answers given will be stored in this dictionary for caching
 # They will be in the format:  {"{hashed_question}": "{answer_from_open_ai}", ..., ...}
@@ -26,10 +26,10 @@ CACHED_ERROR_SOLUTIONS = {}
 def get_gpt_error_solution_suggestion(error: Exception) -> str:
     error_text = repr(error)
     prompt = (
-        f"In {RESPONSE_WORD_LIMIT} words or less, tell me how I can fix the following python exception error: "
-        f"\n {error_text}"
+        f"In {CODE_SAGE_SUGGESTION_WORD_LIMIT} words or less, tell me how I can fix the following python exception error: \n"
+        f"{error_text} \n"
         f"\n"
-        f"The traceback for the error is the following:"
+        f"The traceback for the error is the following: \n"
         f"{traceback.format_exc()}"
     )
     hashed_prompt = hash_string(prompt)
@@ -63,6 +63,8 @@ class ErrorHandlerMiddleware:
     def process_exception(self, request, exception):
         # If the chat gpt api key is set, inject a solution suggestion into the logs
         if OPEN_AI_API_KEY and CODE_SAGE_ENABLED:
+            logger.info("Calling OpenAI for suggestions on how to address an unhandled error. "
+                        "(this may take a few seconds.)"),
             logger.exception(
                 f"An unexpected error occurred. {exception}",
                 extra={
