@@ -18,7 +18,7 @@ An API key from OpenAPI, [which can be found here](https://platform.openai.com/a
 1. Install `code-sage` with a package manager, eg.:
     * `pip install code-sage`
     * `poetry add code-sage`
-    * `pipenv install pipenv`
+    * `pipenv install code-sage`
 2. Add the following to either django settings or environment variables:
 ```python
 OPEN_AI_API_KEY = "your-api-key"
@@ -55,7 +55,7 @@ through django settings files.
 
 | Setting                         | Type    | Default |
 |---------------------------------|---------|---------|
-| OPEN_AI_API_KEY                 | string  | (None)  |
+| OPEN_AI_API_KEY                 | String  | (None)  |
 | CODE_SAGE_ENABLED               | Boolean | False   |
 | CODE_SAGE_SUGGESTION_WORD_LIMIT | Integer | 120     |
 

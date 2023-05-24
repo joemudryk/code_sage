@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "code-sage"
-version = "0.1.2"
+version = "0.1.3"
 description = ""
 authors = ["Joe Mudryk <mudryk.joe@gmail.com>"]
 readme = "README.md"
